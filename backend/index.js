@@ -19,8 +19,8 @@ app.post('/data', async (req, res) => {
     const { name, salary, department } = req.body;
     try{
 
-        const query = 'INSERT INTO employees (id, name, salary, department) VALUES ($1, $2, $3, $4) RETURNING *';
-        const values = [id, name, salary, department];
+        const query = 'INSERT INTO employees (name, salary, department) VALUES ($1, $2, $3) RETURNING *';
+        const values = [name, salary, department];
         const result = await client.query(query,values)
         res.status(201).json(result);
     }catch(err) {
