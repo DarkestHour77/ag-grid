@@ -35,10 +35,35 @@ const postEmployeeData = async (name, salary, department) => {
   }
 } 
 
+const deleteEmployeeData = async (id) =>{
+  try{
+    const response = await axios.delete(`http://localhost:8000/data/${id}`)
+    return response.data
+  }catch(error){
+    console.error("Error deleting data",error)
+  }
+}
+
+const updateEmployeeData = async (id, name, salary, department) => {
+  try{
+    const response = await axios.put(`http://localhost:8000/data/${id}`, {
+      name,
+      salary,
+      department,
+    })
+    return response.data;
+  }catch(error){
+    console.error("Error updating employee data:", error);  }
+}
+
+
+
 function App() {
+
   const [employees, setEmployees] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
   const [columnDefs, setColumnDefs] = useState([ 
-    { field: "id" },
+    { field: "id" ,checkboxSelection: true,},
     { field: "name" },
     { field: "salary"},
     { field: "department" }]
@@ -48,8 +73,14 @@ function App() {
     salary:"",
     department:"",
   })
-
-
+  
+  const defaultColDef = (useMemo(() => ({
+    flex: 1,
+    filter: true,
+    floatingFilter: true,
+    
+  }), []));
+  
   const loadData = async () => {
     const data = await getEmployeeData();
     setEmployees(data);
@@ -60,11 +91,6 @@ function App() {
   },[]);
 
 
-  const defaultColDef = (useMemo(() => ({
-    flex: 1,
-    filter: true,
-    floatingFilter: true,
-  }), []));
 
   const handleInputChange = (e) =>{
     const{name,value}= e.target;
@@ -88,6 +114,46 @@ function App() {
     }
   }
 
+  const onSelectionChanged = (event) => {
+    const selectedRows = event.api.getSelectedRows();
+    setSelectedRows(selectedRows);
+  }
+
+  const handleDeleteData = async(id) =>{
+    try{
+      await deleteEmployeeData(selectedRows[0].id)
+      setEmployees(employees.filter(emp=> emp.id !== id))
+      loadData();
+    }catch(error){
+      console.error("Error deleting EmployeeData",error)
+    }
+  }
+
+  const handleEditData = () =>{
+    if(selectedRows.length > 0){
+    const selectedEmployee = selectedRows[0];
+    setFormData({
+      name: selectedEmployee.name, 
+      salary: selectedEmployee.salary,
+      department: selectedEmployee.department,
+    });
+    console.log("Selected Employee:", selectedEmployee);
+
+    // setEmployees(employees.filter(emp=> emp.id !== selectedEmployee.id));
+  }
+}
+
+  const handleUpdateData = async(id) =>{
+    console.log(formData)
+    console.log(selectedRows[0].id)
+    setFormData(selectedRows[0].id)
+    console.log(formData)
+    
+  }
+
+
+
+
   return (
     <div className="App">
       <div className='addform'>
@@ -108,8 +174,12 @@ function App() {
           columnDefs={columnDefs}
           rowData={employees}
           defaultColDef={defaultColDef}
+          rowSelection={'single'}
+          onSelectionChanged={onSelectionChanged}
           />
       </div>
+      <button onClick={handleDeleteData}>Delete</button>
+      <button onClick={handleEditData}>Update</button>
     </div>
   );
 }

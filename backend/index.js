@@ -42,7 +42,7 @@ app.get('/data', async (req, res) => {
 app.delete('/data/:id', async (req, res) => {
     const id =req.params.id;
     try{
-        const result = await client.query(' DELETE FROM Employees WHERE id = $1 RETURNING * ', [id]);
+        const result = await client.query(' DELETE FROM "Employees" WHERE id = $1 RETURNING * ', [id]);
         if(result.rowCount ===0){
             return res.status(404).json({error: 'Employee not found'});
         }
@@ -58,7 +58,7 @@ app.put('/data/:id', async (req,res)=>{
     const { name, salary, department } = req.body;
     
     try{
-        const query =' UPDATE Employees SET name= $1, salary= $2, department= $2 WHERE id = $4 RETURNING *;';
+        const query =' UPDATE "Employees" SET name= $1, salary= $2, department= $3 WHERE id = $4 RETURNING *;';
         const values = [name, salary, department, id];
         const result = await client.query(query,values);
         if(result.rowCount === 0){
