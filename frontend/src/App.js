@@ -12,6 +12,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 const getEmployeeData = async () => {
   try{
     const response = await axios.get('http://localhost:8000/data')
+    console.log(response.data);
     return response.data.rows;
   } catch (error) {
     console.error('Error fetching employee data:', error);
@@ -22,32 +23,24 @@ const getEmployeeData = async () => {
 function App() {
 
   const [employees, setEmployees] = useState([]);
+  const [columnDefs, setColumnDefs] = useState([ 
+    { field: "id" },
+    { field: "name" },
+    { field: "salary" ,
+      valueFormatter: p => "$" + p.value.toLocaleString()
+    },
+    { field: "department" }]);
 
   const loadData = async () => {
     const data = await getEmployeeData();
     setEmployees(data);
+    console.log(data);
   };
 
   useEffect(() => {
     loadData();
   },[]);
 
-  
-
-  const [rowData, setRowData] = useState([
-    { make: "Tesla", model: "Model Y", price: 64950, electric: true },
-    { make: "Ford", model: "F-Series", price: 33850, electric: false },
-    { make: "Toyota", model: "Corolla", price: 29600, electric: false },
-  ]);
-
-  const [columnDefs, setColumnDefs] = useState([
-    { field: "make" },
-    { field: "model" },
-    { field: "price" ,
-      valueFormatter: p => "$" + p.value.toLocaleString()
-    },
-    { field: "electric" }
-  ]);
 
   const defaultColDef = (useMemo(() => ({
     flex: 1,
@@ -58,9 +51,10 @@ function App() {
   return (
     <div className="ag-theme-balham" style={{ height: 500}}>
       <AgGridReact 
-        rowData={rowData} 
+        // rowData={rowData} 
         columnDefs={columnDefs}
-        defaultColDef={defaultColDef}
+        rowData={employees}
+        // defaultColDef={defaultColDef}
         />
 
     </div>

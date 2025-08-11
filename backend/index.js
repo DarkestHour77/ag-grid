@@ -4,13 +4,13 @@ const { Client } = require('pg');
 const app = express();
 app.use(express.json());
 app.use(cors());
-const PORT = 3000;
+const PORT = 8000;
 
 const client = new Client({
     host: "localhost",
     user: "postgres",
     password: "postgrespass",
-    database: "ag-grid",
+    database: "aggrid",
     port: 5432,
 });
 
@@ -19,7 +19,7 @@ app.post('/data', async (req, res) => {
     const { name, salary, department } = req.body;
     try{
 
-        const query = 'INSERT INTO employees (name, salary, department) VALUES ($1, $2, $3) RETURNING *';
+        const query = 'INSERT INTO "Employees" (name, salary, department) VALUES ($1, $2, $3) RETURNING *';
         const values = [name, salary, department];
         const result = await client.query(query,values)
         res.status(201).json(result);
@@ -31,7 +31,7 @@ app.post('/data', async (req, res) => {
 
 app.get('/data', async (req, res) => {
     try {
-        const result = await client.query('SELECT * FROM employees');
+        const result = await client.query('SELECT * FROM "Employees"');
         res.status(200).json(result);
     } catch (err) {
         console.error('Error fetching data', err);
@@ -42,7 +42,7 @@ app.get('/data', async (req, res) => {
 app.delete('/data/:id', async (req, res) => {
     const id =req.params.id;
     try{
-        const result = await client.query(' DELETE FROM employees WHERE id = $1 RETURNING * ', [id]);
+        const result = await client.query(' DELETE FROM Employees WHERE id = $1 RETURNING * ', [id]);
         if(result.rowCount ===0){
             return res.status(404).json({error: 'Employee not found'});
         }
@@ -58,7 +58,7 @@ app.put('/data/:id', async (req,res)=>{
     const { name, salary, department } = req.body;
     
     try{
-        const query =' UPDATE employees SET name= $1, salary= $2, department= $2 WHERE id = $4 RETURNING *;';
+        const query =' UPDATE Employees SET name= $1, salary= $2, department= $2 WHERE id = $4 RETURNING *;';
         const values = [name, salary, department, id];
         const result = await client.query(query,values);
         if(result.rowCount === 0){
