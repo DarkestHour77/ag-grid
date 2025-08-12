@@ -62,30 +62,30 @@ const updateEmployeeData = async (id, name, salary, department) => {
 function App() {
 
   const gridRowsRef = useRef([])
-  const [ , forceUpdate] = useState(0);
+  const gridRef = useRef(null);
 
+  const [ , forceUpdate] = useState(0);
   const [selectedRows, setSelectedRows] = useState([]);
   const [columnDefs, setColumnDefs] = useState([ 
-    { field: "id" ,checkboxSelection: true,},
-    { field: "name" },
-    { field: "salary"},
-    { field: "department" },
-    { headerName: "Update",
-      field: "update",
-      cellRenderer: 'UpdateButton',
-      cellRendererParams: {
-        onUpdate: (dateToUpdate) =>{
-          // const updateEmployeeData = employees.map(emp => emp.id === dateToUpdate.id ? {...emp, ...dateToUpdate} : emp);
-        },
-      },  
-      minWidth: 100,
-    },
+    { field: "id" ,checkboxSelection: true,editable: false },
+    { field: "name",editable: true },
+    { field: "salary", editable: true},
+    { field: "department", editable: true},
+    { headerName: "Actions",
+      cellRenderer: (params ) => (
+      <div>  
+        <button onClick={()=>handleUpdateData(params.data)}>Update</button>
+        <button onClick={()=>handleDeleteData(params.data)}>Delete</button>
+      </div>
+    )},
+    
   ]);
   const [formData,setFormData] = useState({
     name:"",
     salary:"",
     department:"",
   })
+
   
   const defaultColDef = (useMemo(() => ({
     flex: 1,
@@ -99,8 +99,7 @@ function App() {
     gridRowsRef.current = data; 
     forceUpdate( n => n+1)
   };  
-  
-  
+    
   const handleInputChange = (e) =>{
     const{name,value}= e.target;
     setFormData(prevData=>({...prevData, [name]:value}))
@@ -124,15 +123,17 @@ function App() {
   }
   
   const onSelectionChanged = (event) => {
-    const selectedRows = event.api.getSelectedRows();
-    setSelectedRows(selectedRows);
+    // const selectedRows = event.api.getSelectedRows();
+    const selectedRows = gridRef.current.api.getSelectedRows() || [];
+    console.log('Selected rows:', selectedRows);
+    // setSelectedRows(selectedRows);
   }
   
   const handleDeleteData = async(id) =>{
     try{
+      const selectedRows = gridRef.current.api.getSelectedRows();
       await deleteEmployeeData(selectedRows[0].id)
       gridRowsRef.current = gridRowsRef.current.filter(data => data.id !== selectedRows[0].id)
-
       forceUpdate(n => n+1)
     }catch(error){
       console.error("Error deleting EmployeeData",error)
@@ -140,13 +141,14 @@ function App() {
   }
   
   
-  const handleUpdateData = async(id) =>{
-    console.log(formData)
-    console.log(selectedRows[0].id)
-    setFormData(selectedRows[0].id)
-    console.log(formData)
-  }
-  
+  const handleUpdateData = async(data) =>{
+      try{
+        await updateEmployeeData(data.id, data.name, data.salary, data.department);
+      }catch (error) {
+        console.error('Error updating employee data:', error);
+      }
+      loadData();
+  }  
     useEffect(() => {
       loadData();
     },[]);
@@ -172,6 +174,7 @@ function App() {
 
       <div className="ag-theme-balham" style={{ height: 500}}>
         <AgGridReact
+          ref={gridRef}
           columnDefs={columnDefs}
           rowData={gridRowsRef.current} 
           defaultColDef={defaultColDef}
@@ -179,8 +182,6 @@ function App() {
           onSelectionChanged={onSelectionChanged}
           />
       </div>
-      <button onClick={handleDeleteData}>Delete</button>
-      {/* <button onClick={handleEditData}>Update</button> */}
     </div>
   );
 }
