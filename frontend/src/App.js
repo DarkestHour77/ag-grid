@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
+import UpdateButton from './UpdateButton';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
@@ -60,14 +61,26 @@ const updateEmployeeData = async (id, name, salary, department) => {
 
 function App() {
 
-  const [employees, setEmployees] = useState([]);
+  const gridRowsRef = useRef([])
+  const [ , forceUpdate] = useState(0);
+
   const [selectedRows, setSelectedRows] = useState([]);
   const [columnDefs, setColumnDefs] = useState([ 
     { field: "id" ,checkboxSelection: true,},
     { field: "name" },
     { field: "salary"},
-    { field: "department" }]
-  );
+    { field: "department" },
+    { headerName: "Update",
+      field: "update",
+      cellRenderer: 'UpdateButton',
+      cellRendererParams: {
+        onUpdate: (dateToUpdate) =>{
+          // const updateEmployeeData = employees.map(emp => emp.id === dateToUpdate.id ? {...emp, ...dateToUpdate} : emp);
+        },
+      },  
+      minWidth: 100,
+    },
+  ]);
   const [formData,setFormData] = useState({
     name:"",
     salary:"",
@@ -83,27 +96,23 @@ function App() {
   
   const loadData = async () => {
     const data = await getEmployeeData();
-    setEmployees(data);
-  };
-
-  useEffect(() => {
-    loadData();
-  },[]);
-
-
-
+    gridRowsRef.current = data; 
+    forceUpdate( n => n+1)
+  };  
+  
+  
   const handleInputChange = (e) =>{
     const{name,value}= e.target;
     setFormData(prevData=>({...prevData, [name]:value}))
   }
-
+  
   const handleEmployeesData = async(e) =>{
     e.preventDefault()
     try{
       const newEmployees = await postEmployeeData(formData.name,formData.salary,formData.department)
       
-      setEmployees([...employees, newEmployees])
-      loadData();
+      gridRowsRef.current.push(newEmployees)  //push appended data to the existing array
+      loadData()
       setFormData({
         name:"",
         salary:"",
@@ -113,47 +122,39 @@ function App() {
       console.error("Error adding EmployeeData",error)
     }
   }
-
+  
   const onSelectionChanged = (event) => {
     const selectedRows = event.api.getSelectedRows();
     setSelectedRows(selectedRows);
   }
-
+  
   const handleDeleteData = async(id) =>{
     try{
       await deleteEmployeeData(selectedRows[0].id)
-      setEmployees(employees.filter(emp=> emp.id !== id))
-      loadData();
+      gridRowsRef.current = gridRowsRef.current.filter(data => data.id !== selectedRows[0].id)
+
+      forceUpdate(n => n+1)
     }catch(error){
       console.error("Error deleting EmployeeData",error)
     }
   }
-
-  const handleEditData = () =>{
-    if(selectedRows.length > 0){
-    const selectedEmployee = selectedRows[0];
-    setFormData({
-      name: selectedEmployee.name, 
-      salary: selectedEmployee.salary,
-      department: selectedEmployee.department,
-    });
-    console.log("Selected Employee:", selectedEmployee);
-
-    // setEmployees(employees.filter(emp=> emp.id !== selectedEmployee.id));
-  }
-}
-
+  
+  
   const handleUpdateData = async(id) =>{
     console.log(formData)
     console.log(selectedRows[0].id)
     setFormData(selectedRows[0].id)
     console.log(formData)
-    
   }
-
-
-
-
+  
+    useEffect(() => {
+      loadData();
+    },[]);
+  
+  
+  
+  
+  
   return (
     <div className="App">
       <div className='addform'>
@@ -172,14 +173,14 @@ function App() {
       <div className="ag-theme-balham" style={{ height: 500}}>
         <AgGridReact
           columnDefs={columnDefs}
-          rowData={employees}
+          rowData={gridRowsRef.current} 
           defaultColDef={defaultColDef}
-          rowSelection={'single'}
+          rowSelection={'multiple'}
           onSelectionChanged={onSelectionChanged}
           />
       </div>
       <button onClick={handleDeleteData}>Delete</button>
-      <button onClick={handleEditData}>Update</button>
+      {/* <button onClick={handleEditData}>Update</button> */}
     </div>
   );
 }
