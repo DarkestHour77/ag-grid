@@ -1,11 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
-import UpdateButton from './UpdateButton';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-quartz.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme
-import 'ag-grid-community/styles/ag-theme-balham.css'; // Optional theme
+import 'ag-grid-community/styles/ag-theme-balham.css'; 
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -13,7 +10,6 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 const getEmployeeData = async () => {
   try{
     const response = await axios.get('http://localhost:8000/data')
-    // console.log(response.data);s
     return response.data.rows;
   } catch (error) {
     console.error('Error fetching employee data:', error);
@@ -23,7 +19,6 @@ const getEmployeeData = async () => {
 
 const postEmployeeData = async (name, salary, department) => {
   try{
-    console.log(name,salary,department)
     const response = await axios.post('http://localhost:8000/data', {
       name,
       salary,
@@ -65,9 +60,9 @@ function App() {
   const gridRef = useRef(null);
 
   const [ , forceUpdate] = useState(0);
-  const [selectedRows, setSelectedRows] = useState([]);
+  
   const [columnDefs, setColumnDefs] = useState([ 
-    { field: "id" ,checkboxSelection: true,editable: false },
+    { field: "id" ,editable: false },
     { field: "name",editable: true },
     { field: "salary", editable: true},
     { field: "department", editable: true},
@@ -75,7 +70,7 @@ function App() {
       cellRenderer: (params ) => (
       <div>  
         <button onClick={()=>handleUpdateData(params.data)}>Update</button>
-        <button onClick={()=>handleDeleteData(params.data)}>Delete</button>
+        <button onClick={()=>handleDeleteData(params.data.id)}>Delete</button>
       </div>
     )},
     
@@ -122,18 +117,12 @@ function App() {
     }
   }
   
-  const onSelectionChanged = (event) => {
-    // const selectedRows = event.api.getSelectedRows();
-    const selectedRows = gridRef.current.api.getSelectedRows() || [];
-    console.log('Selected rows:', selectedRows);
-    // setSelectedRows(selectedRows);
-  }
-  
   const handleDeleteData = async(id) =>{
     try{
-      const selectedRows = gridRef.current.api.getSelectedRows();
-      await deleteEmployeeData(selectedRows[0].id)
-      gridRowsRef.current = gridRowsRef.current.filter(data => data.id !== selectedRows[0].id)
+      // const selectedRows = gridRef.current.api.getSelectedRows();
+      // console.log("Selected Rows:", selectedRows);
+      await deleteEmployeeData(id)
+      gridRowsRef.current = gridRowsRef.current.filter(data => data.id !== id)
       forceUpdate(n => n+1)
     }catch(error){
       console.error("Error deleting EmployeeData",error)
@@ -178,8 +167,8 @@ function App() {
           columnDefs={columnDefs}
           rowData={gridRowsRef.current} 
           defaultColDef={defaultColDef}
-          rowSelection={'multiple'}
-          onSelectionChanged={onSelectionChanged}
+          // rowSelection={'multiple'}
+          // onSelectionChanged={onSelectionChanged}
           />
       </div>
     </div>
