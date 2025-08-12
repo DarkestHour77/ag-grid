@@ -27,4 +27,4 @@ Built with **React.js** for the frontend, **Node.js/Express.js** for the backend
 - **PostgreSQL** (via `pg` npm package)
 
 ---
-![](./public/Ag-Grid.gif)
+![](./frontend/public/Ag-Grid.gif)
