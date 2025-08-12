@@ -1,0 +1,205 @@
+/* App container */
+.App {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 30px;
+  background-color: #f0f2f5;
+}
+
+/* Add Employee Form Container */
+.addform {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 30px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading */
+.addform h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+/* Form layout */
+.addform form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Text & Number Inputs */
+.addform input {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.addform input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Submit Button */
+.formsubmit {
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.formsubmit:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.formsubmit:active {
+  transform: translateY(0);
+}
+
+/* AG Grid Styling */
+.ag-theme-balham {
+  max-width: 1000px;
+  margin: 0 auto;
+  /* border-radius: 12px; */
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  height: 200px;
+}
+
+/* Row text styling */
+.ag-theme-balham .ag-row {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Table Header styling */
+.ag-theme-balham .ag-header-cell-label {
+  font-weight: bold;
+  color: #333;
+}
+/* AG Grid cell buttons container */
+.ag-grid-btn {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+/* Base button style */
+.ag-grid-btn button {
+  padding: 2px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.15s ease;
+}
+
+/* Edit button - Muted Blue */
+.ag-grid-btn .edit-btn {
+  background-color: #4a90e2; /* Professional blue */
+  color: white;
+}
+
+.ag-grid-btn .edit-btn:hover {
+  background-color: #357ab8;
+  transform: translateY(-1px);
+}
+
+/* Delete button - Muted Red */
+.ag-grid-btn .delete-btn {
+  background-color: #e94e4e; /* Soft red */
+  color: white;
+}
+
+.ag-grid-btn .delete-btn:hover {
+  background-color: #c13a3a;
+  transform: translateY(-1px);
+}
+
+/* Optional secondary/neutral button */
+.ag-grid-btn .secondary-btn {
+  background-color: #6c757d; /* Neutral gray */
+  color: white;
+}
+
+.ag-grid-btn .secondary-btn:hover {
+  background-color: #555d63;
+  transform: translateY(-1px);
+}
+
+/* Click feedback */
+.ag-grid-btn button:active {
+  transform: translateY(0);
+}
+
+/* ===== Responsive Enhancements for Employee Form & ag-Grid ===== */
+
+/* Tablet adjustments */
+@media (max-width: 992px) {
+  .addform {
+    max-width: 100%;
+    padding: 15px;
+  }
+
+  .addform form {
+    gap: 12px;
+  }
+
+  .ag-theme-balham {
+    max-width: 100%;
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .addform form {
+    flex-direction: column;
+  }
+
+  .addform input,
+  .addform select,
+  .addform textarea {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .formsubmit {
+    width: 100%;
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .ag-theme-balham {
+    overflow-x: auto;
+    border-radius: 8px;
+  }
+
+  /* Reduce font sizes inside grid */
+  .ag-theme-balham .ag-row {
+    font-size: 13px;
+  }
+}
+
+/* Small mobile adjustments */
+@media (max-width: 320px) {
+  h1, .addform h2 {
+    font-size: 1.5rem;
+  }
+
+  .ag-theme-balham {
+    min-width: 300px; /* prevent grid from squishing too much */
+  }
+}

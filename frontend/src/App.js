@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
+import './App.css';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-balham.css'; 
@@ -62,15 +63,15 @@ function App() {
   const [ , forceUpdate] = useState(0);
   
   const [columnDefs, setColumnDefs] = useState([ 
-    { field: "id" ,editable: false },
+   
     { field: "name",editable: true },
     { field: "salary", editable: true},
     { field: "department", editable: true},
     { headerName: "Actions",
       cellRenderer: (params ) => (
-      <div>  
-        <button onClick={()=>handleUpdateData(params.data)}>Update</button>
-        <button onClick={()=>handleDeleteData(params.data.id)}>Delete</button>
+      <div className='ag-grid-btn'>  
+        <button className='edit-btn' onClick={()=>handleUpdateData(params.data)}>Update</button>
+        <button className='delete-btn' onClick={()=>handleDeleteData(params.data.id)}>Delete</button>
       </div>
     )},
     
@@ -93,6 +94,7 @@ function App() {
     const data = await getEmployeeData();
     gridRowsRef.current = data; 
     forceUpdate( n => n+1)
+    gridRef.current.api.sizeColumnsToFit(); // Adjust columns to fit the grid width
   };  
     
   const handleInputChange = (e) =>{
@@ -119,8 +121,6 @@ function App() {
   
   const handleDeleteData = async(id) =>{
     try{
-      // const selectedRows = gridRef.current.api.getSelectedRows();
-      // console.log("Selected Rows:", selectedRows);
       await deleteEmployeeData(id)
       gridRowsRef.current = gridRowsRef.current.filter(data => data.id !== id)
       forceUpdate(n => n+1)
@@ -155,13 +155,13 @@ function App() {
           <input type="text" name="name" placeholder="Name" required value={formData.name} onChange={handleInputChange}/>
           <input type="number" name="salary" placeholder="Salary" required value={formData.salary} onChange={handleInputChange}/>
           <input type="text" name="department" placeholder="Department" required value={formData.department} onChange={handleInputChange}/>
-          <button type="submit" onClick={handleEmployeesData} >Add Employee</button>
+          <button className='formsubmit' type="submit" onClick={handleEmployeesData} >Add Employee</button>
         </form>
 
 
       </div>
 
-      <div className="ag-theme-balham" style={{ height: 500}}>
+      <div className="ag-theme-balham" >
         <AgGridReact
           ref={gridRef}
           columnDefs={columnDefs}
