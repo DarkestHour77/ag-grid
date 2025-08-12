@@ -164,8 +164,12 @@
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
+  .addform{
+    width: 90%;
+  }
   .addform form {
     flex-direction: column;
+    width: 90%;
   }
 
   .addform input,
@@ -190,6 +194,14 @@
   /* Reduce font sizes inside grid */
   .ag-theme-balham .ag-row {
     font-size: 13px;
+    height: 50px !important;
+  }
+  .ag-grid-btn{
+    flex-direction: column;
+  }
+  .ag-grid-btn button {
+  padding: 3px;
+  font-size: 12px;
   }
 }
 
@@ -201,5 +213,10 @@
 
   .ag-theme-balham {
     min-width: 300px; /* prevent grid from squishing too much */
+    
   }
+  .ag-theme-balham .ag-row {
+  height: 50px !important;
+}
+
 }

@@ -89,12 +89,16 @@ function App() {
     floatingFilter: true,
     
   }), []));
+  const defaultRowDef = (useMemo(() => ({
+    rowHeight: 100
+    
+  }), []));
   
   const loadData = async () => {
     const data = await getEmployeeData();
     gridRowsRef.current = data; 
     forceUpdate( n => n+1)
-    gridRef.current.api.sizeColumnsToFit(); // Adjust columns to fit the grid width
+    // gridRef.current.api.sizeColumnsToFit(); // Adjust columns to fit the grid width
   };  
     
   const handleInputChange = (e) =>{
@@ -166,6 +170,7 @@ function App() {
           ref={gridRef}
           columnDefs={columnDefs}
           rowData={gridRowsRef.current} 
+          
           defaultColDef={defaultColDef}
           // rowSelection={'multiple'}
           // onSelectionChanged={onSelectionChanged}
